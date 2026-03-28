@@ -10,13 +10,13 @@ The original source code is untouched. All platform-specific code lives in `macd
 ## Status
 
 Working:
-- Rendering 320x200 software renderer → Raylib texture
-- Input WASD + arrows, mouse
-- Sound effects 8-channel software mixer → Raylib AudioStream
+- Rendering (320x200 software renderer → Raylib texture)
+- Input (WASD + arrows, mouse)
+- Sound effects (8-channel software mixer → Raylib AudioStream)
+- Music (MUS→MIDI conversion, playback via macOS AudioToolbox DLS synthesizer)
 - Single player
 
 Not yet implemented:
-- Music DOOM uses MUS format, needs MUS→MIDI conversion + synthesizer
 - Multiplayer networking
 - Fullscreen / Retina support
 
