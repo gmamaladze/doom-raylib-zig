@@ -1,4 +1,4 @@
-# DOOM on macOS (Raylib + Zig)
+# DOOM on macOS (Raylib + Zig build system)
 
 A port of the original DOOM (linuxdoom-1.10, released by id Software in 1997) to modern macOS using Raylib for graphics/audio and Zig as the build system.
 
