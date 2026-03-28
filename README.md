@@ -1,19 +1,19 @@
 # DOOM on macOS (Raylib + Zig build system)
 
-A port of the original DOOM (linuxdoom-1.10, released by id Software in 1997) to modern macOS using Raylib for graphics/audio and Zig as the build system.
+A port of the original DOOM released by id Software in 1997 to modern macOS Apple Silicon using Raylib for graphics/audio and Zig as the build system.
 
-The original source code is untouched. All platform-specific code lives in `macdoom/` — 5 new C files replace the Linux X11/OSS implementations, and 6 compatibility patches fix 64-bit issues.
+The original source code is untouched. All platform-specific code lives in `macdoom/`
 
 ## Status
 
 Working:
-- Rendering (320x200 software renderer → Raylib texture)
-- Input (WASD + arrows, mouse)
-- Sound effects (8-channel software mixer → Raylib AudioStream)
+- Rendering 320x200 software renderer → Raylib texture
+- Input WASD + arrows, mouse
+- Sound effects 8-channel software mixer → Raylib AudioStream
 - Single player
 
 Not yet implemented:
-- Music (DOOM uses MUS format, needs MUS→MIDI conversion + synthesizer)
+- Music DOOM uses MUS format, needs MUS→MIDI conversion + synthesizer
 - Multiplayer networking
 - Fullscreen / Retina support
 
@@ -78,7 +78,7 @@ macdoom/
     values.h, malloc.h      Header shims for macOS
 ```
 
-DOOM's platform abstraction is clean: the game logic (`D_*`, `G_*`, `P_*`, `R_*`, `S_*`, `W_*`, `Z_*`) calls into 5 `I_*` interface functions for video, sound, timing, input, and networking. This port replaces only those 5 files.
+DOOM's platform abstraction is clean the game logic (`D_*`, `G_*`, `P_*`, `R_*`, `S_*`, `W_*`, `Z_*`) calls into 5 `I_*` interface functions for video, sound, timing, input, and networking. This port replaces only those 5 files.
 
 ## 64-bit porting notes
 
