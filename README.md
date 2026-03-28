@@ -4,6 +4,9 @@ A port of the original DOOM released by id Software in 1997 to modern macOS Appl
 
 The original source code is untouched. All platform-specific code lives in `macdoom/`
 
+<img width="2600" height="1944" alt="CleanShot 2026-03-28 at 19 48 17@2x" src="https://github.com/user-attachments/assets/d833044d-9ab6-43d8-bd46-f3e3a9cbdb2c" />
+
+
 ## Status
 
 Working:
