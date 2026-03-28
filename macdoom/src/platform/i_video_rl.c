@@ -1,10 +1,9 @@
-// DOOM macOS Port - Video & Input (Raylib)
-//
-// Replaces the X11-based i_video.c with Raylib for:
-// - Window creation and management
-// - 8-bit indexed framebuffer -> RGBA texture blitting
-// - Keyboard and mouse input
-//
+/// DOOM macOS Port - Video & Input (Raylib)
+///
+/// Display: converts DOOM's 320x200 8-bit indexed framebuffer to RGBA,
+///          uploads to a GPU texture, draws scaled with nearest-neighbor.
+/// Input:   movement keys write directly to gamekeydown[] (bypasses event
+///          system timing issues), menu keys use D_PostEvent for UI navigation.
 
 #include <stdlib.h>
 #include <string.h>
@@ -96,13 +95,8 @@ static int          window_multiply = 3;
 static int          grabmouse = 1;
 static int          initialized = 0;
 
-// Track key states for detecting press/release edges
 static int          prev_keys[512];
 
-// Tic counter for input polling
-static int          tic_count = 0;
-
-// Externs for direct game state manipulation (bypasses event system for movement)
 #define NUMKEYS_LOCAL 256
 extern boolean gamekeydown[NUMKEYS_LOCAL];
 extern int key_up, key_down, key_left, key_right, key_fire, key_use, key_speed, key_strafe;
@@ -222,38 +216,29 @@ void I_StartTic(void)
 {
     if (!initialized) return;
 
-    tic_count++;
-
-    // Poll Raylib input events. Must call this for IsKeyDown() to work.
-    // Safe to call multiple times per frame — just re-processes the OS event queue.
     PollInputEvents();
 
-    // Handle window close
     if (WindowShouldClose())
         I_Quit();
 
     event_t ev;
 
-    // --- Direct gamekeydown manipulation ---
-    // DOOM's event queue system has timing issues with Raylib: events posted
-    // in I_StartTic get consumed in D_ProcessEvents (called right after),
-    // and keyup events can cancel keydown events before G_BuildTiccmd reads them.
-    // Instead, we directly set gamekeydown[] from Raylib's key state.
+    /// Movement keys write directly to gamekeydown[] instead of using
+    /// D_PostEvent, because DOOM's event queue timing causes keyup events
+    /// to clear gamekeydown before G_BuildTiccmd reads it.
     {
-        // Movement (WASD + arrows)
         gamekeydown[key_up]    = IsKeyDown(KEY_W) || IsKeyDown(KEY_UP);
         gamekeydown[key_down]  = IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN);
         gamekeydown[key_left]  = IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT);
         gamekeydown[key_right] = IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT);
 
-        // Actions
         gamekeydown[key_fire]  = IsKeyDown(KEY_F) || IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL);
         gamekeydown[key_use]   = IsKeyDown(KEY_SPACE);
         gamekeydown[key_speed] = IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT);
         gamekeydown[key_strafe]= IsKeyDown(KEY_LEFT_ALT) || IsKeyDown(KEY_RIGHT_ALT);
     }
 
-    // --- Event-based input for menu/UI keys ---
+    /// Menu/UI keys still use the event system since M_Responder needs events.
     {
         static const struct { int rlkey; int doomkey; } menu_keys[] = {
             { KEY_ESCAPE,        DOOMKEY_ESCAPE },
@@ -315,7 +300,6 @@ void I_StartTic(void)
             prev_keys[rlkey] = is_down;
         }
 
-        // Number keys for weapon switching
         for (int k = KEY_ONE; k <= KEY_NINE; k++) {
             int is_down = IsKeyDown(k);
             int was_down = prev_keys[k];
@@ -336,7 +320,6 @@ void I_StartTic(void)
         }
     }
 
-    // --- Mouse input ---
     {
         int buttons = 0;
         if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))   buttons |= 1;
@@ -359,14 +342,11 @@ void I_StartTic(void)
 
 void I_SetPalette(byte* palette)
 {
-    // Convert 768-byte RGB palette to RGBA lookup table
     for (int i = 0; i < 256; i++)
     {
         unsigned int r = gammatable[usegamma][palette[0]];
         unsigned int g = gammatable[usegamma][palette[1]];
         unsigned int b = gammatable[usegamma][palette[2]];
-
-        // Raylib PIXELFORMAT_UNCOMPRESSED_R8G8B8A8 expects 0xAABBGGRR
         palette_rgba[i] = r | (g << 8) | (b << 16) | (0xFFu << 24);
         palette += 3;
     }
@@ -377,17 +357,12 @@ void I_UpdateNoBlit(void)
     // Nothing needed
 }
 
-static int frame_count = 0;
-
 void I_FinishUpdate(void)
 {
     if (!initialized) return;
 
-    frame_count++;
-
-
-    // Update sound - called here because SNDSERV is defined in doomdef.h
-    // which prevents d_main.c's game loop from calling these
+    /// Sound mixing called here because SNDSERV defined in doomdef.h
+    /// guards out I_UpdateSound/I_SubmitSound calls in d_main.c
     I_UpdateSound();
     I_SubmitSound();
 
