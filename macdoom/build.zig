@@ -16,10 +16,12 @@ pub fn build(b: *std.Build) void {
     root_module.addLibraryPath(.{ .cwd_relative = "/opt/homebrew/lib" });
     root_module.linkSystemLibrary("raylib", .{});
 
-    // Link macOS frameworks required by raylib
+    // Link macOS frameworks required by raylib + music playback
     root_module.linkFramework("IOKit", .{});
     root_module.linkFramework("Cocoa", .{});
     root_module.linkFramework("OpenGL", .{});
+    root_module.linkFramework("AudioToolbox", .{});
+    root_module.linkFramework("CoreFoundation", .{});
 
     // Add compat headers as system include path (provides values.h, malloc.h shims)
     root_module.addSystemIncludePath(b.path("src/compat"));
