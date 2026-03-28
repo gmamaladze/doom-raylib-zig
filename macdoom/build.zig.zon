@@ -1,0 +1,11 @@
+.{
+    .name = .macdoom,
+    .version = "0.1.0",
+    .fingerprint = 0x4c9ea5fd79adbba4,
+    .dependencies = .{},
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}

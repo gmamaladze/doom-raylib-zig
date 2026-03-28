@@ -1,0 +1,9 @@
+# Zig build artifacts
+.zig-cache/
+zig-out/
+
+# DOOM runtime files
+doom1.wad
+*.log
+.doomrc
+DOOM00.pcx
