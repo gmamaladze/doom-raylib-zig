@@ -23,14 +23,17 @@ Not yet implemented:
 ## Install via Homebrew
 
 ```
-brew install --formula Formula/macdoom.rb
+brew tap tornikegomareli/doom-raylib-zig https://github.com/tornikegomareli/doom-raylib-zig
+brew install macdoom
 ```
 
-Place your WAD files in `~/.local/share/doom/` and run:
+Then run:
 
 ```
 macdoom
 ```
+
+The shareware `doom1.wad` is installed automatically. No extra setup needed.
 
 ## Building from Source
 
@@ -45,8 +48,6 @@ cd macdoom
 zig build
 ./zig-out/bin/macdoom
 ```
-
-The shareware WAD (`doom1.wad`, 4MB) is freely distributable but not included in this repo.
 
 You can also specify custom raylib paths (e.g. on Intel Macs):
 

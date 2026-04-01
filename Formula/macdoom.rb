@@ -1,6 +1,6 @@
 class Macdoom < Formula
   desc "DOOM for macOS — the 1993 classic built with Raylib and Zig"
-  homepage "https://github.com/gmamaladze/doom-raylib-zig"
+  homepage "https://github.com/tornikegomareli/doom-raylib-zig"
   url "https://github.com/gmamaladze/doom-raylib-zig/archive/refs/tags/v0.1.0.tar.gz"
   sha256 "15c1ba998b3b8efff1a65d10a1f5ad54dd48bc4e8ed6f8541f7743a3ddbc1453"
   version "0.1.0"
