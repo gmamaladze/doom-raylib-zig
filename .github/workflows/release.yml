@@ -44,11 +44,16 @@ jobs:
           TARBALL_URL="https://github.com/${{ github.repository }}/archive/refs/tags/${TAG}.tar.gz"
           SHA=$(curl -sL "$TARBALL_URL" | shasum -a 256 | cut -d' ' -f1)
           VERSION=${TAG#v}
-          sed -i '' "s|url \".*\"|url \"${TARBALL_URL}\"|" Formula/macdoom.rb
-          sed -i '' "s|version \".*\"|version \"${VERSION}\"|" Formula/macdoom.rb
-          sed -i '' "/sha256/d" Formula/macdoom.rb
-          sed -i '' "/^  url/a\\
-            sha256 \"${SHA}\"" Formula/macdoom.rb
+          python3 - "$TARBALL_URL" "$VERSION" "$SHA" <<'EOF'
+          import sys, re
+          url, version, sha = sys.argv[1], sys.argv[2], sys.argv[3]
+          formula = open("Formula/macdoom.rb").read()
+          formula = re.sub(r'url ".*"', f'url "{url}"', formula)
+          formula = re.sub(r'version ".*"', f'version "{version}"', formula)
+          formula = re.sub(r'\n  sha256 ".*"\n', '\n', formula)
+          formula = re.sub(r'(  url ".*")', r'\1' + f'\n  sha256 "{sha}"', formula)
+          open("Formula/macdoom.rb", "w").write(formula)
+          EOF
           cat Formula/macdoom.rb
 
       - name: Commit updated formula
