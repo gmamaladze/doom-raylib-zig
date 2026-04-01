@@ -10,6 +10,11 @@ class Macdoom < Formula
   depends_on "raylib"
   depends_on :macos
 
+  resource "doom1.wad" do
+    url "https://distro.ibiblio.org/slitaz/sources/packages/d/doom1.wad"
+    sha256 "1d7d43be501e67d927e415e0b8f3e29c3bf33075e859721816f652a526cac771"
+  end
+
   def install
     cd "macdoom" do
       system "zig", "build",
@@ -19,20 +24,16 @@ class Macdoom < Formula
       bin.install "zig-out/bin/macdoom"
     end
 
-    # Create a standard WAD directory
-    (share/"doom").mkpath
+    (share/"doom").install resource("doom1.wad")
   end
 
   def caveats
     <<~EOS
-      macdoom requires DOOM WAD files to play. Place your WAD files in:
+      The shareware doom1.wad is installed. To play with the full game,
+      place your WAD files in:
         ~/.local/share/doom/
-      or
-        #{share}/doom/
       or set the DOOMWADDIR environment variable:
         export DOOMWADDIR=/path/to/your/wads
-
-      The shareware doom1.wad is freely available online.
     EOS
   end
 
