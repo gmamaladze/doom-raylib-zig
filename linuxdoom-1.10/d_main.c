@@ -577,7 +577,34 @@ void IdentifyVersion (void)
     char *doomwaddir;
     doomwaddir = getenv("DOOMWADDIR");
     if (!doomwaddir)
+    {
+	// Search common WAD locations: current dir, ~/.local/share/doom/,
+	// /opt/homebrew/share/doom/, /usr/local/share/doom/
+	static char resolved_waddir[256];
+	char *home_env = getenv("HOME");
+	if (home_env)
+	{
+	    snprintf(resolved_waddir, sizeof(resolved_waddir),
+		     "%s/.local/share/doom", home_env);
+	    if (access(resolved_waddir, R_OK) == 0)
+	    {
+		doomwaddir = resolved_waddir;
+		goto waddir_found;
+	    }
+	}
+	if (access("/opt/homebrew/share/doom", R_OK) == 0)
+	{
+	    doomwaddir = "/opt/homebrew/share/doom";
+	    goto waddir_found;
+	}
+	if (access("/usr/local/share/doom", R_OK) == 0)
+	{
+	    doomwaddir = "/usr/local/share/doom";
+	    goto waddir_found;
+	}
 	doomwaddir = ".";
+	waddir_found: ;
+    }
 
     // Commercial.
     doom2wad = malloc(strlen(doomwaddir)+1+9+1);
@@ -586,11 +613,11 @@ void IdentifyVersion (void)
     // Retail.
     doomuwad = malloc(strlen(doomwaddir)+1+8+1);
     sprintf(doomuwad, "%s/doomu.wad", doomwaddir);
-    
+
     // Registered.
     doomwad = malloc(strlen(doomwaddir)+1+8+1);
     sprintf(doomwad, "%s/doom.wad", doomwaddir);
-    
+
     // Shareware.
     doom1wad = malloc(strlen(doomwaddir)+1+9+1);
     sprintf(doom1wad, "%s/doom1.wad", doomwaddir);

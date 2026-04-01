@@ -4,6 +4,10 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
+    // Configurable raylib paths (default: Homebrew on Apple Silicon)
+    const raylib_include = b.option([]const u8, "raylib-include-path", "Path to raylib headers (default: /opt/homebrew/include)") orelse "/opt/homebrew/include";
+    const raylib_lib = b.option([]const u8, "raylib-lib-path", "Path to raylib library (default: /opt/homebrew/lib)") orelse "/opt/homebrew/lib";
+
     // Create root module
     const root_module = b.createModule(.{
         .target = target,
@@ -11,9 +15,9 @@ pub fn build(b: *std.Build) void {
         .link_libc = true,
     });
 
-    // Link system-installed raylib (via Homebrew)
-    root_module.addSystemIncludePath(.{ .cwd_relative = "/opt/homebrew/include" });
-    root_module.addLibraryPath(.{ .cwd_relative = "/opt/homebrew/lib" });
+    // Link system-installed raylib
+    root_module.addSystemIncludePath(.{ .cwd_relative = raylib_include });
+    root_module.addLibraryPath(.{ .cwd_relative = raylib_lib });
     root_module.linkSystemLibrary("raylib", .{});
 
     // Link macOS frameworks required by raylib + music playback
@@ -142,7 +146,7 @@ pub fn build(b: *std.Build) void {
 
     // Create executable
     const exe = b.addExecutable(.{
-        .name = "doom",
+        .name = "macdoom",
         .root_module = root_module,
     });
 
